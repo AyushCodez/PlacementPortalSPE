@@ -31,6 +31,9 @@
       become: true
       when: not kubectl_stat.stat.exists
     
+    - name: Delete existing Minikube
+      command: minikube delete
+
     - name: Start Minikube
       command: minikube start --driver=docker
 
