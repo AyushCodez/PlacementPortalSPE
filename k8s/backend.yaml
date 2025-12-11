@@ -1,0 +1,244 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+      - name: auth-service
+        image: auth-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5002
+        env:
+        - name: PORT
+          value: "5002"
+        - name: MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: spe-secrets
+              key: mongo-uri
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: spe-secrets
+              key: jwt-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+spec:
+  selector:
+    app: auth-service
+  ports:
+  - port: 5002
+    targetPort: 5002
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: campaign-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: campaign-service
+  template:
+    metadata:
+      labels:
+        app: campaign-service
+    spec:
+      containers:
+      - name: campaign-service
+        image: campaign-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5003
+        env:
+        - name: PORT
+          value: "5003"
+        - name: MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: spe-secrets
+              key: mongo-uri
+        - name: EMAIL_USER
+          valueFrom:
+            secretKeyRef:
+              name: spe-secrets
+              key: email-user
+        - name: EMAIL_PASS
+          valueFrom:
+            secretKeyRef:
+              name: spe-secrets
+              key: email-pass
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: spe-secrets
+              key: jwt-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: campaign-service
+spec:
+  selector:
+    app: campaign-service
+  ports:
+  - port: 5003
+    targetPort: 5003
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: assessment-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: assessment-service
+  template:
+    metadata:
+      labels:
+        app: assessment-service
+    spec:
+      containers:
+      - name: assessment-service
+        image: assessment-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5004
+        env:
+        - name: PORT
+          value: "5004"
+        - name: MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: spe-secrets
+              key: mongo-uri
+        - name: EMAIL_USER
+          valueFrom:
+            secretKeyRef:
+              name: spe-secrets
+              key: email-user
+        - name: EMAIL_PASS
+          valueFrom:
+            secretKeyRef:
+              name: spe-secrets
+              key: email-pass
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: spe-secrets
+              key: jwt-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: assessment-service
+spec:
+  selector:
+    app: assessment-service
+  ports:
+  - port: 5004
+    targetPort: 5004
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: student-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: student-service
+  template:
+    metadata:
+      labels:
+        app: student-service
+    spec:
+      containers:
+      - name: student-service
+        image: student-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5005
+        env:
+        - name: PORT
+          value: "5005"
+        - name: MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: spe-secrets
+              key: mongo-uri
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: spe-secrets
+              key: jwt-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: student-service
+spec:
+  selector:
+    app: student-service
+  ports:
+  - port: 5005
+    targetPort: 5005
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dashboard-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dashboard-service
+  template:
+    metadata:
+      labels:
+        app: dashboard-service
+    spec:
+      containers:
+      - name: dashboard-service
+        image: dashboard-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5001
+        env:
+        - name: PORT
+          value: "5001"
+        - name: MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: spe-secrets
+              key: mongo-uri
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: spe-secrets
+              key: jwt-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dashboard-service
+spec:
+  selector:
+    app: dashboard-service
+  ports:
+  - port: 5001
+    targetPort: 5001

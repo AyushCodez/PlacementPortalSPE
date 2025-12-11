@@ -1,0 +1,11 @@
+---
+- name: Deploy to Kubernetes
+  hosts: local
+  gather_facts: false
+  tasks:
+    - name: Apply All Kubernetes Manifests
+      command: minikube kubectl -- apply -f k8s/
+      register: deploy_output
+    - name: Show Deployment Output
+      debug:
+        var: deploy_output.stdout_lines

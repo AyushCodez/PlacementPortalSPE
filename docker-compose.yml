@@ -1,0 +1,108 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  auth-service:
+    build: ./services/auth-service
+    ports:
+      - "5002:5002"
+    environment:
+      - PORT=5002
+      - MONGO_URI=mongodb://mongo:27017/spe_db
+      - JWT_SECRET=secret
+    depends_on:
+      - mongo
+
+  seed-master:
+    build: ./services/auth-service
+    command: node seed_master.js
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/spe_db
+    depends_on:
+      - mongo
+
+  campaign-service:
+    build: ./services/campaign-service
+    ports:
+      - "5003:5003"
+    environment:
+      - PORT=5003
+      - MONGO_URI=mongodb://mongo:27017/spe_db
+      - EMAIL_USER=sarveshkumara123@gmail.com
+      - EMAIL_PASS=dnhhaykuouqccpju
+      - JWT_SECRET=secret
+    depends_on:
+      - mongo
+
+  assessment-service:
+    build: ./services/assessment-service
+    ports:
+      - "5004:5004"
+    environment:
+      - PORT=5004
+      - MONGO_URI=mongodb://mongo:27017/spe_db
+      - EMAIL_USER=sarveshkumara123@gmail.com
+      - EMAIL_PASS=dnhhaykuouqccpju
+      - JWT_SECRET=secret
+    depends_on:
+      - mongo
+
+  student-service:
+    build: ./services/student-service
+    ports:
+      - "5005:5005"
+    environment:
+      - PORT=5005
+      - MONGO_URI=mongodb://mongo:27017/spe_db
+      - JWT_SECRET=secret
+    depends_on:
+      - mongo
+
+  dashboard-service:
+    build: ./services/dashboard-service
+    ports:
+      - "5006:5001" # Expose internal 5001 as 5006
+    environment:
+      - PORT=5001 # Internal port
+      - MONGO_URI=mongodb://mongo:27017/spe_db
+      - JWT_SECRET=secret
+    depends_on:
+      - mongo
+
+  gateway:
+    build: ./services/gateway
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - DASHBOARD_SERVICE_URL=http://dashboard-service:5001 # Gateway points to internal port
+      - AUTH_SERVICE_URL=http://auth-service:5002
+      - CAMPAIGN_SERVICE_URL=http://campaign-service:5003
+      - ASSESSMENT_SERVICE_URL=http://assessment-service:5004
+      - STUDENT_SERVICE_URL=http://student-service:5005
+    depends_on:
+      - auth-service
+      - campaign-service
+      - assessment-service
+      - student-service
+      - dashboard-service
+
+  client:
+    build: ./client
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:5000/api
+    depends_on:
+      - gateway
+    stdin_open: true
+    tty: true
+
+volumes:
+  mongo-data:
