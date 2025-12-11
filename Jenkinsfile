@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         DOCKER_REGISTRY = 'docker.io'
-        DOCKER_USER = 'sarvesh717' 
-        DOCKER_CREDS_ID = 'docker-hub-credentials'
+        DOCKER_CREDS = credentials('dockerhub-creds')
+        DOCKER_CREDS_ID = 'dockerhub-creds'
     }
 
     stages {
@@ -29,7 +29,7 @@ pipeline {
 
                     services.each { serviceName, path ->
                         echo "Building ${serviceName}..."
-                        sh "docker build -t ${DOCKER_USER}/${serviceName}:${BUILD_NUMBER} -t ${DOCKER_USER}/${serviceName}:latest ${path}"
+                        sh "docker build -t ${DOCKER_CREDS_USR}/${serviceName}:${BUILD_NUMBER} -t ${DOCKER_CREDS_USR}/${serviceName}:latest ${path}"
                     }
                 }
             }
@@ -51,8 +51,8 @@ pipeline {
 
                         services.each { serviceName ->
                             echo "Pushing ${serviceName}..."
-                            sh "docker push ${DOCKER_USER}/${serviceName}:${BUILD_NUMBER}"
-                            sh "docker push ${DOCKER_USER}/${serviceName}:latest"
+                            sh "docker push ${DOCKER_CREDS_USR}/${serviceName}:${BUILD_NUMBER}"
+                            sh "docker push ${DOCKER_CREDS_USR}/${serviceName}:latest"
                         }
                     }
                 }
