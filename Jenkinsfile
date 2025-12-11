@@ -81,6 +81,12 @@ pipeline {
                         sh "pkill -f 'kubectl.*port-forward' || true"
                         
                         // Wait for deployments to be ready
+                        sh "minikube kubectl -- rollout status deployment/mongo --timeout=120s || true"
+                        sh "minikube kubectl -- rollout status deployment/auth-service --timeout=120s || true"
+                        sh "minikube kubectl -- rollout status deployment/campaign-service --timeout=120s || true"
+                        sh "minikube kubectl -- rollout status deployment/assessment-service --timeout=120s || true"
+                        sh "minikube kubectl -- rollout status deployment/student-service --timeout=120s || true"
+                        sh "minikube kubectl -- rollout status deployment/dashboard-service --timeout=120s || true"
                         sh "minikube kubectl -- rollout status deployment/gateway --timeout=120s || true"
                         sh "minikube kubectl -- rollout status deployment/client --timeout=120s || true"
 
@@ -94,16 +100,15 @@ pipeline {
     }
 
     post {
-        always {
-            script {
-                echo 'Cleaning up Docker images...'
-            }
-        }
         success {
-            echo 'Pipeline executed successfully!'
+            mail to: "${EMAIL_CREDS_USR}",
+                 subject: "SUCCESS: Pipeline '${env.JOB_NAME}' [${env.BUILD_NUMBER}]",
+                 body: "The pipeline run was successful. Check the build log here: ${env.BUILD_URL}"
         }
         failure {
-            echo 'Pipeline failed. Please check the logs.'
+            mail to: "${EMAIL_CREDS_USR}",
+                 subject: "FAILURE: Pipeline '${env.JOB_NAME}' [${env.BUILD_NUMBER}]",
+                 body: "The pipeline run failed. Check the build log for errors: ${env.BUILD_URL}"
         }
     }
 }

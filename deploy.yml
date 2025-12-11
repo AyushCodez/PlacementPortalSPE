@@ -31,8 +31,15 @@
       become: true
       when: not kubectl_stat.stat.exists
     
-    - name: Delete existing Minikube
+    - name: Try to stop Minikube
       command: minikube stop
+      register: stop_result
+      ignore_errors: true
+
+    - name: Delete Minikube if stop failed
+      command: minikube delete --all --purge
+      when: stop_result.failed
+
     - name: Start Minikube
       command: minikube start --driver=docker
 
