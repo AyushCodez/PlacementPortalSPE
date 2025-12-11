@@ -5,6 +5,7 @@ pipeline {
         DOCKER_REGISTRY = 'docker.io'
         DOCKER_CREDS = credentials('dockerhub-creds')
         DOCKER_CREDS_ID = 'dockerhub-creds'
+        EMAIL_CREDS = credentials('email-creds')
     }
 
     stages {
@@ -63,7 +64,11 @@ pipeline {
             steps {
                 echo "Triggering Ansible Playbook..."
                 sh "ansible --version"
-                sh "ansible-playbook -i inventory.ini deploy.yml --extra-vars 'docker_user=${DOCKER_CREDS_USR}'"
+                script {
+                    def emailUserB64 = sh(script: "echo -n '${EMAIL_CREDS_USR}' | base64", returnStdout: true).trim()
+                    def emailPassB64 = sh(script: "echo -n '${EMAIL_CREDS_PSW}' | base64", returnStdout: true).trim()
+                    sh "ansible-playbook -i inventory.ini deploy.yml --extra-vars 'docker_user=${DOCKER_CREDS_USR} email_user_b64=${emailUserB64} email_pass_b64=${emailPassB64}'"
+                }
             }
         }
 
