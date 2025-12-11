@@ -37,11 +37,6 @@
     - name: Start Minikube
       command: minikube start --driver=docker
 
-    - name: Export Kubeconfig for local access
-      shell: |
-        minikube kubectl -- config view --flatten > {{ playbook_dir }}/kubeconfig.yaml
-        chmod 666 {{ playbook_dir }}/kubeconfig.yaml
-
     - name: Apply All Kubernetes Manifests
       shell: |
         for f in k8s/*.yaml; do echo "---"; cat "$f"; echo; done | sed 's/DOCKER_USER_PLACEHOLDER/{{ docker_user }}/g' | minikube kubectl -- apply -f -

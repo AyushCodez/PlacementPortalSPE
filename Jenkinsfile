@@ -66,6 +66,26 @@ pipeline {
                 sh "ansible-playbook -i inventory.ini deploy.yml --extra-vars 'docker_user=${DOCKER_CREDS_USR}'"
             }
         }
+
+        stage('Port Forward Services') {
+            steps {
+                script {
+                    echo "Setting up port forwarding..."
+                    withEnv(['JENKINS_NODE_COOKIE=dontKillMe', 'BUILD_ID=dontKillMe']) {
+                        // Kill existing port-forwards to avoid conflicts
+                        sh "pkill -f 'kubectl.*port-forward' || true"
+                        
+                        // Wait for deployments to be ready
+                        sh "minikube kubectl -- rollout status deployment/gateway --timeout=120s || true"
+                        sh "minikube kubectl -- rollout status deployment/client --timeout=120s || true"
+
+                        // Start new port-forwards
+                        sh "nohup minikube kubectl -- port-forward svc/gateway 5000:5000 --address 0.0.0.0 > /dev/null 2>&1 &"
+                        sh "nohup minikube kubectl -- port-forward svc/client 3000:3000 --address 0.0.0.0 > /dev/null 2>&1 &"
+                    }
+                }
+            }
+        }
     }
 
     post {
