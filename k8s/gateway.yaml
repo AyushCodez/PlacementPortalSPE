@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
       - name: gateway
-        image: gateway:latest
-        imagePullPolicy: IfNotPresent
+        image: DOCKER_USER_PLACEHOLDER/gateway:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
         env:

@@ -7,8 +7,8 @@ spec:
     spec:
       containers:
       - name: seed-master
-        image: auth-service:latest
-        imagePullPolicy: IfNotPresent
+        image: DOCKER_USER_PLACEHOLDER/auth-service:latest
+        imagePullPolicy: Always
         command: ["node", "seed_master.js"]
         env:
         - name: MONGO_URI

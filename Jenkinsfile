@@ -13,7 +13,7 @@ pipeline {
                 checkout scm
             }
         }
-
+        
         stage('Build Docker Images') {
             steps {
                 script {
@@ -63,7 +63,7 @@ pipeline {
             steps {
                 echo "Triggering Ansible Playbook..."
                 sh "ansible --version"
-                sh "ansible-playbook -i inventory.ini deploy.yml"
+                sh "ansible-playbook -i inventory.ini deploy.yml --extra-vars 'docker_user=${DOCKER_CREDS_USR}'"
             }
         }
     }

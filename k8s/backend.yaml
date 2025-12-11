@@ -12,10 +12,14 @@ spec:
       labels:
         app: auth-service
     spec:
+      initContainers:
+      - name: wait-for-mongo
+        image: busybox:1.28
+        command: ['sh', '-c', "until nc -z -v -w30 mongo 27017; do echo waiting for mongo; sleep 2; done"]
       containers:
       - name: auth-service
-        image: auth-service:latest
-        imagePullPolicy: IfNotPresent
+        image: DOCKER_USER_PLACEHOLDER/auth-service:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 5002
         env:
@@ -57,10 +61,14 @@ spec:
       labels:
         app: campaign-service
     spec:
+      initContainers:
+      - name: wait-for-mongo
+        image: busybox:1.28
+        command: ['sh', '-c', "until nc -z -v -w30 mongo 27017; do echo waiting for mongo; sleep 2; done"]
       containers:
       - name: campaign-service
-        image: campaign-service:latest
-        imagePullPolicy: IfNotPresent
+        image: DOCKER_USER_PLACEHOLDER/campaign-service:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 5003
         env:
@@ -112,10 +120,14 @@ spec:
       labels:
         app: assessment-service
     spec:
+      initContainers:
+      - name: wait-for-mongo
+        image: busybox:1.28
+        command: ['sh', '-c', "until nc -z -v -w30 mongo 27017; do echo waiting for mongo; sleep 2; done"]
       containers:
       - name: assessment-service
-        image: assessment-service:latest
-        imagePullPolicy: IfNotPresent
+        image: DOCKER_USER_PLACEHOLDER/assessment-service:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 5004
         env:
@@ -167,10 +179,14 @@ spec:
       labels:
         app: student-service
     spec:
+      initContainers:
+      - name: wait-for-mongo
+        image: busybox:1.28
+        command: ['sh', '-c', "until nc -z -v -w30 mongo 27017; do echo waiting for mongo; sleep 2; done"]
       containers:
       - name: student-service
-        image: student-service:latest
-        imagePullPolicy: IfNotPresent
+        image: DOCKER_USER_PLACEHOLDER/student-service:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 5005
         env:
@@ -212,10 +228,14 @@ spec:
       labels:
         app: dashboard-service
     spec:
+      initContainers:
+      - name: wait-for-mongo
+        image: busybox:1.28
+        command: ['sh', '-c', "until nc -z -v -w30 mongo 27017; do echo waiting for mongo; sleep 2; done"]
       containers:
       - name: dashboard-service
-        image: dashboard-service:latest
-        imagePullPolicy: IfNotPresent
+        image: DOCKER_USER_PLACEHOLDER/dashboard-service:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 5001
         env:

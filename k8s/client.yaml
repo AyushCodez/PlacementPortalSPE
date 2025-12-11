@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
       - name: client
-        image: client:latest
-        imagePullPolicy: IfNotPresent
+        image: DOCKER_USER_PLACEHOLDER/client:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 3000
         env:
