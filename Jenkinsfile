@@ -64,10 +64,15 @@ pipeline {
             steps {
                 echo "Triggering Ansible Playbook..."
                 sh "ansible --version"
-                script {
-                    def emailUserB64 = sh(script: "echo -n '${EMAIL_CREDS_USR}' | base64", returnStdout: true).trim()
-                    def emailPassB64 = sh(script: "echo -n '${EMAIL_CREDS_PSW}' | base64", returnStdout: true).trim()
-                    sh "ansible-playbook -i inventory.ini deploy.yml --extra-vars 'docker_user=${DOCKER_CREDS_USR} email_user_b64=${emailUserB64} email_pass_b64=${emailPassB64}'"
+                withCredentials([string(credentialsId: 'ansible-vault-pass', variable: 'VAULT_PASS')]) {
+                    script {
+                        sh "echo $VAULT_PASS > .vault_pass"
+                        try {
+                            sh "ansible-playbook -i inventory.ini deploy.yml --vault-password-file .vault_pass --extra-vars 'docker_user=${DOCKER_CREDS_USR}'"
+                        } finally {
+                            sh "rm -f .vault_pass"
+                        }
+                    }
                 }
             }
         }
