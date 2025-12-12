@@ -1,6 +1,8 @@
 - name: Deploy to Kubernetes
   hosts: local
   gather_facts: true
+  vars_files:
+    - group_vars/all/vault.yml
   tasks:
     # --- Dependencies (unchanged) ---
     - name: Check if Minikube exists
