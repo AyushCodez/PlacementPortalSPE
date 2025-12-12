@@ -20,6 +20,13 @@ spec:
       - name: auth-service
         image: DOCKER_USER_PLACEHOLDER/auth-service:latest
         imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
         ports:
         - containerPort: 5002
         env:
@@ -69,6 +76,13 @@ spec:
       - name: campaign-service
         image: DOCKER_USER_PLACEHOLDER/campaign-service:latest
         imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
         ports:
         - containerPort: 5003
         env:
@@ -121,7 +135,14 @@ spec:
         app: assessment-service
     spec:
       initContainers:
-      - name: wait-for-mongo
+      - resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        name: wait-for-mongo
         image: busybox:1.28
         command: ['sh', '-c', "until nc -z -v -w30 mongo 27017; do echo waiting for mongo; sleep 2; done"]
       containers:
@@ -180,7 +201,14 @@ spec:
         app: student-service
     spec:
       initContainers:
-      - name: wait-for-mongo
+      - resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        name: wait-for-mongo
         image: busybox:1.28
         command: ['sh', '-c', "until nc -z -v -w30 mongo 27017; do echo waiting for mongo; sleep 2; done"]
       containers:
@@ -222,7 +250,14 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: dashboard-service
+      apresources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        p: dashboard-service
   template:
     metadata:
       labels:
