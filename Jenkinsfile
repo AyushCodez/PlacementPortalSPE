@@ -79,20 +79,11 @@ pipeline {
                     withEnv(['JENKINS_NODE_COOKIE=dontKillMe', 'BUILD_ID=dontKillMe']) {
                         // Kill existing port-forwards to avoid conflicts
                         sh "pkill -f 'kubectl.*port-forward' || true"
-                        
-                        // Wait for deployments to be ready
-                        sh "minikube kubectl -- rollout status deployment/mongo --timeout=120s || true"
-                        sh "minikube kubectl -- rollout status deployment/auth-service --timeout=120s || true"
-                        sh "minikube kubectl -- rollout status deployment/campaign-service --timeout=120s || true"
-                        sh "minikube kubectl -- rollout status deployment/assessment-service --timeout=120s || true"
-                        sh "minikube kubectl -- rollout status deployment/student-service --timeout=120s || true"
-                        sh "minikube kubectl -- rollout status deployment/dashboard-service --timeout=120s || true"
-                        sh "minikube kubectl -- rollout status deployment/gateway --timeout=120s || true"
-                        sh "minikube kubectl -- rollout status deployment/client --timeout=120s || true"
 
                         // Start new port-forwards
                         sh "nohup minikube kubectl -- port-forward svc/gateway 5000:5000 --address 0.0.0.0 > /dev/null 2>&1 &"
                         sh "nohup minikube kubectl -- port-forward svc/client 3000:3000 --address 0.0.0.0 > /dev/null 2>&1 &"
+                        sh "nohup minikube kubectl -- port-forward svc/kibana 5601:5601 -n logging --address 0.0.0.0 > /dev/null 2>&1 &"
                     }
                 }
             }

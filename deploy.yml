@@ -50,3 +50,20 @@
     - name: Show Deployment Output
       debug:
         var: deploy_output.stdout_lines
+
+    - name: Wait for all deployments to be ready
+      command: minikube kubectl -- rollout status deployment/{{ item }}
+      loop:
+        - mongo
+        - auth-service
+        - campaign-service
+        - assessment-service
+        - student-service
+        - dashboard-service
+        - gateway
+        - client
+
+    - name: Deploy ELK Stack
+      include_role:
+        name: elk
+
