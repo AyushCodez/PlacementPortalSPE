@@ -135,20 +135,20 @@ spec:
         app: assessment-service
     spec:
       initContainers:
-      - name: wait-for-mongo
-        image: busybox:1.28
-        command: ['sh', '-c', "until nc -z -v -w30 mongo 27017; do echo waiting for mongo; sleep 2; done"]
-      containers:
-      - name: assessment-service
-        image: DOCKER_USER_PLACEHOLDER/assessment-service:latest
-        imagePullPolicy: Always
-        resources:
+      - resources:
           requests:
             cpu: "100m"
             memory: "128Mi"
           limits:
             cpu: "500m"
             memory: "512Mi"
+        name: wait-for-mongo
+        image: busybox:1.28
+        command: ['sh', '-c', "until nc -z -v -w30 mongo 27017; do echo waiting for mongo; sleep 2; done"]
+      containers:
+      - name: assessment-service
+        image: DOCKER_USER_PLACEHOLDER/assessment-service:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 5004
         env:
@@ -201,20 +201,20 @@ spec:
         app: student-service
     spec:
       initContainers:
-      - name: wait-for-mongo
-        image: busybox:1.28
-        command: ['sh', '-c', "until nc -z -v -w30 mongo 27017; do echo waiting for mongo; sleep 2; done"]
-      containers:
-      - name: student-service
-        image: DOCKER_USER_PLACEHOLDER/student-service:latest
-        imagePullPolicy: Always
-        resources:
+      - resources:
           requests:
             cpu: "100m"
             memory: "128Mi"
           limits:
             cpu: "500m"
             memory: "512Mi"
+        name: wait-for-mongo
+        image: busybox:1.28
+        command: ['sh', '-c', "until nc -z -v -w30 mongo 27017; do echo waiting for mongo; sleep 2; done"]
+      containers:
+      - name: student-service
+        image: DOCKER_USER_PLACEHOLDER/student-service:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 5005
         env:
@@ -250,7 +250,14 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: dashboard-service
+      apresources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        p: dashboard-service
   template:
     metadata:
       labels:
@@ -264,13 +271,6 @@ spec:
       - name: dashboard-service
         image: DOCKER_USER_PLACEHOLDER/dashboard-service:latest
         imagePullPolicy: Always
-        resources:
-          requests:
-            cpu: "100m"
-            memory: "128Mi"
-          limits:
-            cpu: "500m"
-            memory: "512Mi"
         ports:
         - containerPort: 5001
         env:
