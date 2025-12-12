@@ -41,7 +41,10 @@
       when: stop_result.failed
 
     - name: Start Minikube
-      command: minikube start --driver=docker
+      command: minikube start --driver=docker --memory=8192 --cpus=4
+
+    - name: Enable Metrics Server Addon
+      command: minikube addons enable metrics-server
 
     - name: Apply All Kubernetes Manifests
       shell: |
