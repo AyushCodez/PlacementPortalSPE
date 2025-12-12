@@ -1,9 +1,8 @@
----
 - name: Deploy to Kubernetes
   hosts: local
   gather_facts: true
   tasks:
-    # Install Minikube manually since it's not in standard repos
+    # --- Dependencies (unchanged) ---
     - name: Check if Minikube exists
       stat:
         path: /usr/local/bin/minikube
@@ -17,7 +16,6 @@
       become: true
       when: not minikube_stat.stat.exists
 
-    # Install kubectl manually
     - name: Check if kubectl exists
       stat:
         path: /usr/local/bin/kubectl
@@ -30,18 +28,18 @@
         mode: '0755'
       become: true
       when: not kubectl_stat.stat.exists
+
+    # --- CHANGED SECTION START ---
     
-    - name: Try to stop Minikube
-      command: minikube stop
-      register: stop_result
-      ignore_errors: true
+    # REMOVED: "Try to stop Minikube" and "Delete Minikube" tasks.
+    # We want to keep the cluster running to ensure zero downtime.
 
-    - name: Delete Minikube if stop failed
-      command: minikube delete --all --purge
-      when: stop_result.failed
-
-    - name: Start Minikube
+    - name: Ensure Minikube is Running
       command: minikube start --driver=docker --memory=8192 --cpus=4
+      # This command is idempotent. If Minikube is already running, 
+      # it simply verifies the status without interrupting services.
+
+    # --- CHANGED SECTION END ---
 
     - name: Enable Metrics Server Addon
       command: minikube addons enable metrics-server
@@ -50,9 +48,25 @@
       shell: |
         for f in k8s/*.yaml; do echo "---"; cat "$f"; echo; done | sed 's/DOCKER_USER_PLACEHOLDER/{{ docker_user }}/g' | sed 's/EMAIL_USER_PLACEHOLDER/{{ email_user_b64 }}/g' | sed 's/EMAIL_PASS_PLACEHOLDER/{{ email_pass_b64 }}/g' | minikube kubectl -- apply -f -
       register: deploy_output
+
     - name: Show Deployment Output
       debug:
         var: deploy_output.stdout_lines
+
+    # --- NEW TASK ---
+    - name: Trigger Rolling Restart for Zero Downtime Update
+      command: minikube kubectl -- rollout restart deployment/{{ item }}
+      loop:
+        - mongo
+        - auth-service
+        - campaign-service
+        - assessment-service
+        - student-service
+        - dashboard-service
+        - gateway
+        - client
+      # This ensures that even if only configuration (Env vars/Secrets) changed,
+      # the pods are cycled gracefully (start new -> wait for ready -> kill old).
 
     - name: Wait for all deployments to be ready
       command: minikube kubectl -- rollout status deployment/{{ item }}

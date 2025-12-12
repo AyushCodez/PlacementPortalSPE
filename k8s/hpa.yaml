@@ -8,7 +8,7 @@ spec:
     kind: Deployment
     name: auth-service
   minReplicas: 1
-  maxReplicas: 10
+  maxReplicas: 3
   metrics:
   - type: Resource
     resource:
@@ -28,7 +28,7 @@ spec:
     kind: Deployment
     name: assessment-service
   minReplicas: 1
-  maxReplicas: 10
+  maxReplicas: 3
   metrics:
   - type: Resource
     resource:
@@ -48,7 +48,7 @@ spec:
     kind: Deployment
     name: campaign-service
   minReplicas: 1
-  maxReplicas: 10
+  maxReplicas: 3
   metrics:
   - type: Resource
     resource:
@@ -68,7 +68,7 @@ spec:
     kind: Deployment
     name: student-service
   minReplicas: 1
-  maxReplicas: 10
+  maxReplicas: 3
   metrics:
   - type: Resource
     resource:
@@ -88,7 +88,7 @@ spec:
     kind: Deployment
     name: dashboard-service
   minReplicas: 1
-  maxReplicas: 10
+  maxReplicas: 3
   metrics:
   - type: Resource
     resource:
@@ -108,7 +108,7 @@ spec:
     kind: Deployment
     name: gateway
   minReplicas: 1
-  maxReplicas: 10
+  maxReplicas: 3
   metrics:
   - type: Resource
     resource:
@@ -128,7 +128,7 @@ spec:
     kind: Deployment
     name: client
   minReplicas: 1
-  maxReplicas: 10
+  maxReplicas: 3
   metrics:
   - type: Resource
     resource:
