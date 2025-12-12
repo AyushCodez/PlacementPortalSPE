@@ -14,10 +14,6 @@
 - name: Apply Filebeat
   command: minikube kubectl -- apply -f k8s-local/elk/04-filebeat.yaml
 
-- name: Wait for Elasticsearch to be ready
+- name: Wait for ELK pods to be ready
   shell: minikube kubectl -- wait --namespace logging --for=condition=ready pod --selector=app=elasticsearch --timeout=300s
-  ignore_errors: true
-
-- name: Wait for Kibana to be ready
-  shell: minikube kubectl -- wait --namespace logging --for=condition=ready pod --selector=app=kibana --timeout=300s
   ignore_errors: true
