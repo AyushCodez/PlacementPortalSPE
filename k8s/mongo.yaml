@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: mongo
 spec:
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: mongo
