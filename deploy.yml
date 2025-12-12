@@ -4,6 +4,13 @@
   vars_files:
     - group_vars/all/vault.yml
   tasks:
+    - name: Debug Loaded Variables
+      debug:
+        msg: 
+          - "Docker User: {{ docker_user }}"
+          - "Email User B64: {{ email_user_b64 | default('NOT_FOUND') }}"
+          - "Email Pass B64: {{ email_pass_b64 | default('NOT_FOUND') }}"
+
     # --- Dependencies (unchanged) ---
     - name: Check if Minikube exists
       stat:
