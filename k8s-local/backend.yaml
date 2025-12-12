@@ -1,0 +1,234 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      initContainers:
+      - name: wait-for-mongo
+        image: busybox
+        command: ['sh', '-c', "until nc -z -v -w30 mongo 27017; do echo waiting for mongo; sleep 2; done"]
+      containers:
+      - name: auth-service
+        image: local/auth-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5002
+        env:
+        - name: PORT
+          value: "5002"
+        - name: MONGO_URI
+          value: mongodb://mongo:27017/spe_db
+        - name: JWT_SECRET
+          value: secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+spec:
+  selector:
+    app: auth-service
+  ports:
+  - port: 5002
+    targetPort: 5002
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: campaign-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: campaign-service
+  template:
+    metadata:
+      labels:
+        app: campaign-service
+    spec:
+      initContainers:
+      - name: wait-for-mongo
+        image: busybox
+        command: ['sh', '-c', "until nc -z -v -w30 mongo 27017; do echo waiting for mongo; sleep 2; done"]
+      containers:
+      - name: campaign-service
+        image: local/campaign-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5003
+        env:
+        - name: PORT
+          value: "5003"
+        - name: MONGO_URI
+          value: mongodb://mongo:27017/spe_db
+        - name: EMAIL_USER
+          valueFrom:
+            secretKeyRef:
+              name: spe-secrets
+              key: email-user
+        - name: EMAIL_PASS
+          valueFrom:
+            secretKeyRef:
+              name: spe-secrets
+              key: email-pass
+        - name: JWT_SECRET
+          value: secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: campaign-service
+spec:
+  selector:
+    app: campaign-service
+  ports:
+  - port: 5003
+    targetPort: 5003
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: assessment-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: assessment-service
+  template:
+    metadata:
+      labels:
+        app: assessment-service
+    spec:
+      initContainers:
+      - name: wait-for-mongo
+        image: busybox
+        command: ['sh', '-c', "until nc -z -v -w30 mongo 27017; do echo waiting for mongo; sleep 2; done"]
+      containers:
+      - name: assessment-service
+        image: local/assessment-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5004
+        env:
+        - name: PORT
+          value: "5004"
+        - name: MONGO_URI
+          value: mongodb://mongo:27017/spe_db
+        - name: EMAIL_USER
+          valueFrom:
+            secretKeyRef:
+              name: spe-secrets
+              key: email-user
+        - name: EMAIL_PASS
+          valueFrom:
+            secretKeyRef:
+              name: spe-secrets
+              key: email-pass
+        - name: JWT_SECRET
+          value: secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: assessment-service
+spec:
+  selector:
+    app: assessment-service
+  ports:
+  - port: 5004
+    targetPort: 5004
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: student-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: student-service
+  template:
+    metadata:
+      labels:
+        app: student-service
+    spec:
+      initContainers:
+      - name: wait-for-mongo
+        image: busybox
+        command: ['sh', '-c', "until nc -z -v -w30 mongo 27017; do echo waiting for mongo; sleep 2; done"]
+      containers:
+      - name: student-service
+        image: local/student-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5005
+        env:
+        - name: PORT
+          value: "5005"
+        - name: MONGO_URI
+          value: mongodb://mongo:27017/spe_db
+        - name: JWT_SECRET
+          value: secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: student-service
+spec:
+  selector:
+    app: student-service
+  ports:
+  - port: 5005
+    targetPort: 5005
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dashboard-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dashboard-service
+  template:
+    metadata:
+      labels:
+        app: dashboard-service
+    spec:
+      initContainers:
+      - name: wait-for-mongo
+        image: busybox
+        command: ['sh', '-c', "until nc -z -v -w30 mongo 27017; do echo waiting for mongo; sleep 2; done"]
+      containers:
+      - name: dashboard-service
+        image: local/dashboard-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5001
+        env:
+        - name: PORT
+          value: "5001"
+        - name: MONGO_URI
+          value: mongodb://mongo:27017/spe_db
+        - name: JWT_SECRET
+          value: secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dashboard-service
+spec:
+  selector:
+    app: dashboard-service
+  ports:
+  - port: 5001
+    targetPort: 5001

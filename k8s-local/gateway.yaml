@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+      - name: gateway
+        image: local/gateway:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+        env:
+        - name: PORT
+          value: "5000"
+        - name: DASHBOARD_SERVICE_URL
+          value: http://dashboard-service:5001
+        - name: AUTH_SERVICE_URL
+          value: http://auth-service:5002
+        - name: CAMPAIGN_SERVICE_URL
+          value: http://campaign-service:5003
+        - name: ASSESSMENT_SERVICE_URL
+          value: http://assessment-service:5004
+        - name: STUDENT_SERVICE_URL
+          value: http://student-service:5005
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+spec:
+  type: LoadBalancer
+  selector:
+    app: gateway
+  ports:
+  - port: 5000
+    targetPort: 5000

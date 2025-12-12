@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+    spec:
+      containers:
+      - name: client
+        image: local/client:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+        env:
+        # Assuming browser access to gateway is via localized URL/IP, usually localhost if port forwarded or LB IP
+        # If LoadBalancer works, it might be localhost:5000 or a specific IP.
+        # For local dev, often REACT_APP_API_URL needs to be accessible from the BROWSER, not the container.
+        # If running in Minikube with tunnel, localhost:5000 might work.
+        - name: REACT_APP_API_URL
+          value: http://localhost:5000/api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: client
+spec:
+  type: LoadBalancer
+  selector:
+    app: client
+  ports:
+  - port: 3000
+    targetPort: 3000
